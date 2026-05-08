@@ -1,0 +1,29 @@
+# Build output
+bin/
+dist/
+*.exe
+*.test
+*.out
+
+# Test and coverage artifacts
+coverage.out
+coverage.html
+
+# Local environment and secrets
+.env
+.env.*
+
+# Logs and temporary files
+*.log
+tmp/
+temp/
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local Go workspace files
+go.work
+go.work.sum
