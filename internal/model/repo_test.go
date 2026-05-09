@@ -9,13 +9,13 @@ func TestParseRepoRef(t *testing.T) {
 		want    RepoRef
 		wantErr bool
 	}{
-		{name: "short", input: "openai/codex", want: RepoRef{Owner: "openai", Name: "codex"}},
-		{name: "url", input: "https://github.com/openai/codex", want: RepoRef{Owner: "openai", Name: "codex"}},
-		{name: "git suffix", input: "https://github.com/openai/codex.git", want: RepoRef{Owner: "openai", Name: "codex"}},
-		{name: "wrong host", input: "https://example.com/openai/codex", wantErr: true},
-		{name: "http", input: "http://github.com/openai/codex", wantErr: true},
-		{name: "too many parts", input: "openai/codex/issues", wantErr: true},
-		{name: "bad chars", input: "openai/co dex", wantErr: true},
+		{name: "short", input: "github/cli", want: RepoRef{Owner: "github", Name: "cli"}},
+		{name: "url", input: "https://github.com/github/cli", want: RepoRef{Owner: "github", Name: "cli"}},
+		{name: "git suffix", input: "https://github.com/github/cli.git", want: RepoRef{Owner: "github", Name: "cli"}},
+		{name: "wrong host", input: "https://example.com/github/cli", wantErr: true},
+		{name: "http", input: "http://github.com/github/cli", wantErr: true},
+		{name: "too many parts", input: "github/cli/issues", wantErr: true},
+		{name: "bad chars", input: "github/cl i", wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

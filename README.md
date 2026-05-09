@@ -20,33 +20,56 @@ go build -o bin/repo-health .
 ```sh
 go run . scan
 repo-health scan
-repo-health scan openai/codex
-repo-health scan https://github.com/openai/codex --verbose
-repo-health scan openai/codex --json
+repo-health scan github/cli
+repo-health scan https://github.com/github/cli --verbose
+repo-health scan github/cli --json
 ```
 
 If you run `repo-health scan` without an argument, the CLI prompts for a repository:
 
 ```txt
-GitHub repository (owner/repo or URL): https://github.com/openai/codex
+GitHub repository (owner/repo or URL): https://github.com/github/cli
 ```
 
 Example output:
 
 ```txt
 Repo Health: 78/100 (C)
+Repository Risk: Medium
 
-PASS CI configured
+✓ PASS CI configured
   Continuous integration configuration was detected.
-PASS Commit activity
+✓ PASS Commit activity
   14 commits were found in the last 90 days.
-WARN Issue health
+⚠ WARN Issue health
   43 open issues; 19 appear stale.
-FAIL Releases
+✗ FAIL Releases
   No releases or tags were found.
 
 Top fixes:
 1. Create a release - Tag a version and publish release notes when the project reaches a usable milestone.
+```
+
+JSON output is stable for CI jobs and dashboards:
+
+```json
+{
+  "repository": {
+    "owner": "github",
+    "name": "cli",
+    "default_branch": "main",
+    "archived": false,
+    "stars": 1234,
+    "forks": 123,
+    "open_issues": 43
+  },
+  "score": 78,
+  "max_score": 100,
+  "grade": "C",
+  "risk": "medium",
+  "checks": [],
+  "recommendations": []
+}
 ```
 
 ## Scoring Rubric
@@ -55,15 +78,17 @@ The score is a transparent 100-point rubric:
 
 | Category | Points |
 | --- | ---: |
-| README quality | 15 |
-| Commit activity | 15 |
-| Issue health | 15 |
-| Pull request health | 10 |
-| CI presence | 10 |
+| README quality | 10 |
+| CI presence | 15 |
 | License | 10 |
+| Commit activity | 20 |
+| Issue health | 10 |
+| Pull request health | 10 |
 | Releases/tags | 10 |
 | Test coverage hints | 10 |
 | Dependency hygiene hints | 5 |
+
+Archived repositories receive a 10-point score penalty and are always reported as high risk.
 
 See [docs/scoring.md](docs/scoring.md) for detailed thresholds.
 
@@ -98,6 +123,8 @@ The token is read from the environment only. It is never printed or written to d
 
 - GitHub Action mode.
 - Web dashboard using the same scanner engine.
+- Repository comparison mode.
+- Bus-factor and maintainer dependency analysis.
 - Organization-level reporting.
 - Deeper dependency freshness checks.
 - Historical score tracking.

@@ -15,14 +15,14 @@ func (ReadmeCheck) Run(_ context.Context, data model.RepositoryData, _ config.Co
 	const id = "readme.quality"
 	readme := strings.TrimSpace(data.Readme)
 	if readme == "" {
-		return result(id, "README quality", model.StatusFail, 0, 15, "No README was found.", recommendation(id, "Add a README", "Document what the project does, how to install it, and how to run tests."))
+		return result(id, "README quality", model.StatusFail, 0, 10, "No README was found.", recommendation(id, "Add a README", "Document what the project does, how to install it, and how to run tests."))
 	}
 
-	score := 5
+	score := 3
 	signals := 0
 	lower := strings.ToLower(readme)
 	if utf8.RuneCountInString(readme) >= 800 {
-		score += 4
+		score += 3
 		signals++
 	}
 	if strings.Contains(readme, "#") {
@@ -36,11 +36,11 @@ func (ReadmeCheck) Run(_ context.Context, data model.RepositoryData, _ config.Co
 		}
 	}
 
-	if score >= 13 {
-		return result(id, "README quality", model.StatusPass, 15, 15, "README includes enough structure and usage detail to orient contributors.", nil)
+	if score >= 9 {
+		return result(id, "README quality", model.StatusPass, 10, 10, "README includes enough structure and usage detail to orient contributors.", nil)
 	}
 	if signals >= 2 {
-		return result(id, "README quality", model.StatusWarn, score, 15, "README exists but could explain setup, usage, or contribution workflow more clearly.", recommendation(id, "Improve the README", "Add setup steps, usage examples, test commands, and contribution guidance."))
+		return result(id, "README quality", model.StatusWarn, score, 10, "README exists but could explain setup, usage, or contribution workflow more clearly.", recommendation(id, "Improve the README", "Add setup steps, usage examples, test commands, and contribution guidance."))
 	}
-	return result(id, "README quality", model.StatusWarn, score, 15, "README is present but very thin.", recommendation(id, "Expand the README", "Include project purpose, installation, usage, testing, and support information."))
+	return result(id, "README quality", model.StatusWarn, score, 10, "README is present but very thin.", recommendation(id, "Expand the README", "Include project purpose, installation, usage, testing, and support information."))
 }

@@ -21,10 +21,10 @@ func (CommitActivityCheck) Run(_ context.Context, data model.RepositoryData, cfg
 	}
 
 	if recent >= cfg.RecentCommitPass {
-		return result(id, "Commit activity", model.StatusPass, 15, 15, fmt.Sprintf("%d commits were found in the last 90 days.", recent), nil)
+		return result(id, "Commit activity", model.StatusPass, 20, 20, fmt.Sprintf("%d commits were found in the last 90 days.", recent), nil)
 	}
 	if recent >= cfg.RecentCommitWarn {
-		return result(id, "Commit activity", model.StatusWarn, 8, 15, fmt.Sprintf("%d commits were found in the last 90 days.", recent), recommendation(id, "Increase maintenance cadence", "Keep regular commits or maintenance notes so users can see the project is active."))
+		return result(id, "Commit activity", model.StatusWarn, 10, 20, fmt.Sprintf("%d commits were found in the last 90 days.", recent), recommendation(id, "Increase maintenance cadence", "Keep regular commits or maintenance notes so users can see the project is active."))
 	}
-	return result(id, "Commit activity", model.StatusFail, 0, 15, "No commits were found in the last 90 days.", recommendation(id, "Show recent maintenance", "Merge updates, close maintenance tasks, or archive the repository if it is no longer maintained."))
+	return result(id, "Commit activity", model.StatusFail, 0, 20, "No commits were found in the last 90 days.", recommendation(id, "Show recent maintenance", "Merge updates, close maintenance tasks, or archive the repository if it is no longer maintained."))
 }

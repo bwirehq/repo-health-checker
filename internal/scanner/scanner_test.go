@@ -11,7 +11,7 @@ import (
 )
 
 func TestScanUsesSourceAndChecks(t *testing.T) {
-	ref := model.RepoRef{Owner: "openai", Name: "codex"}
+	ref := model.RepoRef{Owner: "github", Name: "cli"}
 	source := fakeSource{data: model.RepositoryData{Ref: ref, Readme: "# Test"}}
 	check := fakeCheck{result: model.CheckResult{
 		ID:        "fake.check",

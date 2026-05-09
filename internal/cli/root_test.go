@@ -20,11 +20,11 @@ func TestExecuteRejectsInvalidRepo(t *testing.T) {
 
 func TestRepoInputPromptsWhenMissingArgument(t *testing.T) {
 	var stdout bytes.Buffer
-	got, err := repoInput(strings.NewReader("https://github.com/openai/codex\n"), &stdout, nil)
+	got, err := repoInput(strings.NewReader("https://github.com/github/cli\n"), &stdout, nil)
 	if err != nil {
 		t.Fatalf("repoInput returned error: %v", err)
 	}
-	if got != "https://github.com/openai/codex" {
+	if got != "https://github.com/github/cli" {
 		t.Fatalf("input = %q, want GitHub URL", got)
 	}
 	if !strings.Contains(stdout.String(), "GitHub repository") {

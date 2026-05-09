@@ -1,13 +1,33 @@
 package model
 
 type ScanResult struct {
-	Repository      RepoRef          `json:"repository"`
-	Score           int              `json:"score"`
-	MaxScore        int              `json:"max_score"`
-	Grade           string           `json:"grade"`
-	Checks          []CheckResult    `json:"checks"`
-	Recommendations []Recommendation `json:"recommendations"`
+	Repository      RepositorySummary `json:"repository"`
+	Score           int               `json:"score"`
+	MaxScore        int               `json:"max_score"`
+	Grade           string            `json:"grade"`
+	Risk            RiskLevel         `json:"risk"`
+	Checks          []CheckResult     `json:"checks"`
+	Recommendations []Recommendation  `json:"recommendations"`
 }
+
+type RepositorySummary struct {
+	Owner         string `json:"owner"`
+	Name          string `json:"name"`
+	Description   string `json:"description,omitempty"`
+	DefaultBranch string `json:"default_branch,omitempty"`
+	Archived      bool   `json:"archived"`
+	Stars         int    `json:"stars"`
+	Forks         int    `json:"forks"`
+	OpenIssues    int    `json:"open_issues"`
+}
+
+type RiskLevel string
+
+const (
+	RiskLow    RiskLevel = "low"
+	RiskMedium RiskLevel = "medium"
+	RiskHigh   RiskLevel = "high"
+)
 
 type CheckResult struct {
 	ID             string          `json:"id"`

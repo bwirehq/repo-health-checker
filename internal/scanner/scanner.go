@@ -36,5 +36,5 @@ func (s *Scanner) Scan(ctx context.Context, ref model.RepoRef) (model.ScanResult
 	for _, check := range s.checks {
 		results = append(results, check.Run(ctx, data, s.cfg))
 	}
-	return scoring.Aggregate(ref, results, s.cfg.MaxRecommendations), nil
+	return scoring.Aggregate(data, results, s.cfg.MaxRecommendations), nil
 }

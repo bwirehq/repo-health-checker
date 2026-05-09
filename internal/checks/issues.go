@@ -14,7 +14,7 @@ func (IssueHealthCheck) Run(_ context.Context, data model.RepositoryData, cfg co
 	const id = "issues.health"
 	open := len(data.Issues)
 	if open == 0 {
-		return result(id, "Issue health", model.StatusPass, 15, 15, "There are no open issues.", nil)
+		return result(id, "Issue health", model.StatusPass, 10, 10, "There are no open issues.", nil)
 	}
 
 	cutoff := cfg.Now.Add(-cfg.StaleIssueAge)
@@ -25,10 +25,10 @@ func (IssueHealthCheck) Run(_ context.Context, data model.RepositoryData, cfg co
 
 	switch {
 	case ratio <= 0.20:
-		return result(id, "Issue health", model.StatusPass, 15, 15, fmt.Sprintf("%d open issues; %d appear stale.", open, stale), nil)
+		return result(id, "Issue health", model.StatusPass, 10, 10, fmt.Sprintf("%d open issues; %d appear stale.", open, stale), nil)
 	case ratio <= 0.50:
-		return result(id, "Issue health", model.StatusWarn, 8, 15, fmt.Sprintf("%d open issues; %d appear stale.", open, stale), recommendation(id, "Triage stale issues", "Review issues with no updates in 90 days and close, label, or prioritize them."))
+		return result(id, "Issue health", model.StatusWarn, 5, 10, fmt.Sprintf("%d open issues; %d appear stale.", open, stale), recommendation(id, "Triage stale issues", "Review issues with no updates in 90 days and close, label, or prioritize them."))
 	default:
-		return result(id, "Issue health", model.StatusFail, 3, 15, fmt.Sprintf("%d open issues; %d appear stale.", open, stale), recommendation(id, "Reduce stale issue backlog", "Close outdated issues and label the rest by priority or status."))
+		return result(id, "Issue health", model.StatusFail, 2, 10, fmt.Sprintf("%d open issues; %d appear stale.", open, stale), recommendation(id, "Reduce stale issue backlog", "Close outdated issues and label the rest by priority or status."))
 	}
 }
