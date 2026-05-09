@@ -59,6 +59,21 @@ func TestIssueHealthStale(t *testing.T) {
 	}
 }
 
+func TestGitHubOnlyChecksAreInfoForLocalScans(t *testing.T) {
+	data := model.RepositoryData{Source: model.SourceLocal}
+	cfg := config.Default(time.Date(2026, 5, 8, 12, 0, 0, 0, time.UTC))
+
+	issue := IssueHealthCheck{}.Run(context.Background(), data, cfg)
+	if issue.Status != model.StatusInfo || issue.MaxPoints != 0 {
+		t.Fatalf("issue check = %#v, want info 0/0", issue)
+	}
+
+	pr := PullRequestHealthCheck{}.Run(context.Background(), data, cfg)
+	if pr.Status != model.StatusInfo || pr.MaxPoints != 0 {
+		t.Fatalf("pull request check = %#v, want info 0/0", pr)
+	}
+}
+
 func longText() string {
 	out := ""
 	for len(out) < 900 {

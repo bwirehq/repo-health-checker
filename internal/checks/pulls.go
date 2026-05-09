@@ -12,6 +12,9 @@ type PullRequestHealthCheck struct{}
 
 func (PullRequestHealthCheck) Run(_ context.Context, data model.RepositoryData, cfg config.Config) model.CheckResult {
 	const id = "prs.health"
+	if data.Source == model.SourceLocal {
+		return result(id, "Pull request health", model.StatusInfo, 0, 0, "Pull request health is unavailable for offline local scans.", nil)
+	}
 	open := len(data.PullRequests)
 	if open == 0 {
 		return result(id, "Pull request health", model.StatusPass, 10, 10, "There are no open pull requests.", nil)

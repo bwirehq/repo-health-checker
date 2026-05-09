@@ -6,7 +6,9 @@ import (
 	"io"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/bwirehq/repo-health-checker/internal/local"
 	"github.com/spf13/cobra"
 )
 
@@ -49,5 +51,18 @@ func TestScanCommandHasCompactFlag(t *testing.T) {
 	}
 	if flag := scan.Flags().Lookup("compact"); flag == nil {
 		t.Fatal("compact flag was not registered")
+	}
+}
+
+func TestScanTargetRoutesLocalPathToLocalSource(t *testing.T) {
+	ref, source, err := scanTarget(".", time.Second)
+	if err != nil {
+		t.Fatalf("scanTarget returned error: %v", err)
+	}
+	if ref.Owner != "local" {
+		t.Fatalf("ref = %#v, want local owner", ref)
+	}
+	if _, ok := source.(*local.Source); !ok {
+		t.Fatalf("source = %T, want *local.Source", source)
 	}
 }

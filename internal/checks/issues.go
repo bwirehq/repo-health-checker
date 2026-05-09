@@ -12,6 +12,9 @@ type IssueHealthCheck struct{}
 
 func (IssueHealthCheck) Run(_ context.Context, data model.RepositoryData, cfg config.Config) model.CheckResult {
 	const id = "issues.health"
+	if data.Source == model.SourceLocal {
+		return result(id, "Issue health", model.StatusInfo, 0, 0, "Issue health is unavailable for offline local scans.", nil)
+	}
 	open := len(data.Issues)
 	if open == 0 {
 		return result(id, "Issue health", model.StatusPass, 10, 10, "There are no open issues.", nil)

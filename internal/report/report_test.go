@@ -16,7 +16,7 @@ func TestWriteText(t *testing.T) {
 		t.Fatalf("Write returned error: %v", err)
 	}
 	got := buf.String()
-	for _, want := range []string{"Repo Health: 78/100", "Repository Risk: Medium", "PASS CI configured 15/15", "Top weaknesses:", "No license", "Top fixes:", "Add a license"} {
+	for _, want := range []string{"Repo Health: 78/100", "Repository Risk: Medium", "Score breakdown:", "License: 0/10", "PASS CI configured 15/15", "Top weaknesses:", "No license", "Top fixes:", "Add a license"} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("output missing %q:\n%s", want, got)
 		}
@@ -42,7 +42,7 @@ func TestWriteTextUsesBadgesByDefault(t *testing.T) {
 		t.Fatalf("Write returned error: %v", err)
 	}
 	got := buf.String()
-	for _, want := range []string{"✓ PASS", "✗ FAIL"} {
+	for _, want := range []string{"\u2713 PASS", "\u2717 FAIL"} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("output missing badge %q:\n%s", want, got)
 		}
@@ -61,7 +61,7 @@ func TestWriteCompact(t *testing.T) {
 			t.Fatalf("compact output missing %q:\n%s", want, got)
 		}
 	}
-	for _, notWant := range []string{"Repository Risk:", "Scan completed in", "Top fixes:"} {
+	for _, notWant := range []string{"Repository Risk:", "Scan completed in", "Score breakdown:", "Top fixes:"} {
 		if strings.Contains(got, notWant) {
 			t.Fatalf("compact output included %q:\n%s", notWant, got)
 		}
@@ -80,8 +80,10 @@ func TestWriteJSON(t *testing.T) {
 			t.Fatalf("json missing %q:\n%s", want, got)
 		}
 	}
-	if strings.Contains(got, "Scan completed in") || strings.Contains(got, "Score: 78/100") {
-		t.Fatalf("json output included text renderer content:\n%s", got)
+	for _, notWant := range []string{"Scan completed in", "Score: 78/100", "Score breakdown:"} {
+		if strings.Contains(got, notWant) {
+			t.Fatalf("json output included text renderer content %q:\n%s", notWant, got)
+		}
 	}
 }
 

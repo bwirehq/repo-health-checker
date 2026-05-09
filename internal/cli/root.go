@@ -12,6 +12,7 @@ import (
 
 	"github.com/bwirehq/repo-health-checker/internal/config"
 	gh "github.com/bwirehq/repo-health-checker/internal/github"
+	"github.com/bwirehq/repo-health-checker/internal/local"
 	"github.com/bwirehq/repo-health-checker/internal/model"
 	"github.com/bwirehq/repo-health-checker/internal/report"
 	"github.com/bwirehq/repo-health-checker/internal/scanner"
@@ -89,18 +90,17 @@ type scanOptions struct {
 }
 
 func runScan(ctx context.Context, stdout io.Writer, input string, opts scanOptions) error {
-	ref, err := model.ParseRepoRef(input)
-	if err != nil {
-		return err
-	}
 	if opts.failUnder < 0 || opts.failUnder > 100 {
 		return errors.New("--fail-under must be between 0 and 100")
 	}
 	ctx, cancel := context.WithTimeout(ctx, opts.timeout)
 	defer cancel()
 
-	client := gh.NewClient(&http.Client{Timeout: opts.timeout})
-	scan := scanner.New(client, config.Default(time.Now().UTC()), nil)
+	ref, source, err := scanTarget(input, opts.timeout)
+	if err != nil {
+		return err
+	}
+	scan := scanner.New(source, config.Default(time.Now().UTC()), nil)
 	start := time.Now()
 	result, err := scan.Scan(ctx, ref)
 	duration := time.Since(start)
@@ -114,6 +114,19 @@ func runScan(ctx context.Context, stdout io.Writer, input string, opts scanOptio
 		return &scoreError{score: result.Score, threshold: opts.failUnder}
 	}
 	return nil
+}
+
+func scanTarget(input string, timeout time.Duration) (model.RepoRef, scanner.Source, error) {
+	if local.IsPath(input) {
+		ref := local.RefForPath(input)
+		return ref, local.NewSource(input), nil
+	}
+	ref, err := model.ParseRepoRef(input)
+	if err != nil {
+		return model.RepoRef{}, nil, err
+	}
+	client := gh.NewClient(&http.Client{Timeout: timeout})
+	return ref, client, nil
 }
 
 type scoreError struct {

@@ -20,6 +20,8 @@ go build -o bin/repo-health .
 ```sh
 go run . scan
 repo-health scan
+repo-health scan .
+repo-health scan ../some-repo
 repo-health scan github/cli
 repo-health scan https://github.com/github/cli --verbose
 repo-health scan github/cli --compact
@@ -32,6 +34,15 @@ If you run `repo-health scan` without an argument, the CLI prompts for a reposit
 GitHub repository (owner/repo or URL): https://github.com/github/cli
 ```
 
+Local scans are offline and use files plus local git metadata when available:
+
+```sh
+repo-health scan .
+repo-health scan ../some-repo
+```
+
+GitHub-only checks such as open issues and pull request health are marked as informational during local scans.
+
 Example output:
 
 ```txt
@@ -39,6 +50,18 @@ Repo Health: 78/100 (C)
 Repository Risk: Medium
 
 Scan completed in 1.2s
+
+Score breakdown:
+Repository status: skipped
+README quality: 10/10
+Commit activity: 10/20
+Issue health: skipped
+Pull request health: skipped
+CI configured: 15/15
+License: 0/10
+Releases: 0/10
+Test coverage hints: 10/10
+Dependency hygiene: 5/5
 
 ✓ PASS CI configured
   Continuous integration configuration was detected.
@@ -139,6 +162,7 @@ When `--json` and `--compact` are both set, JSON output wins.
 ## Roadmap
 
 - GitHub Action mode.
+- GitHub Actions usage recipe with `--json` and `--fail-under`.
 - Web dashboard using the same scanner engine.
 - Repository comparison mode.
 - Bus-factor and maintainer dependency analysis.

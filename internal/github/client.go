@@ -35,6 +35,7 @@ func (c *Client) FetchRepository(ctx context.Context, ref model.RepoRef) (model.
 
 	data := model.RepositoryData{
 		Ref:            ref,
+		Source:         model.SourceGitHub,
 		Description:    repo.GetDescription(),
 		DefaultBranch:  repo.GetDefaultBranch(),
 		Archived:       repo.GetArchived(),

@@ -45,10 +45,24 @@ func writeText(w io.Writer, result model.ScanResult, opts Options) error {
 		}
 	}
 
+	if len(result.Checks) > 0 {
+		if _, err := fmt.Fprintln(w, "Score breakdown:"); err != nil {
+			return err
+		}
+		for _, check := range result.Checks {
+			if _, err := fmt.Fprintf(w, "%s: %s\n", check.Title, scoreLine(check)); err != nil {
+				return err
+			}
+		}
+		if _, err := fmt.Fprintln(w); err != nil {
+			return err
+		}
+	}
+
 	for _, check := range result.Checks {
 		line := fmt.Sprintf("%s %s", marker(check.Status, opts.NoColor), check.Title)
 		if opts.Verbose {
-			line = fmt.Sprintf("%s %d/%d", line, check.Points, check.MaxPoints)
+			line = fmt.Sprintf("%s %s", line, scoreLine(check))
 		}
 		if _, err := fmt.Fprintf(w, "%s\n  %s\n", line, check.Summary); err != nil {
 			return err
@@ -61,7 +75,7 @@ func writeText(w io.Writer, result model.ScanResult, opts Options) error {
 			return err
 		}
 		for _, weakness := range weaknesses {
-			if _, err := fmt.Fprintf(w, "• %s\n", weakness); err != nil {
+			if _, err := fmt.Fprintf(w, "\u2022 %s\n", weakness); err != nil {
 				return err
 			}
 		}
@@ -100,13 +114,13 @@ func marker(status model.Status, noColor bool) string {
 	}
 	switch status {
 	case model.StatusPass:
-		return "\x1b[32m✓ PASS\x1b[0m"
+		return "\x1b[32m\u2713 PASS\x1b[0m"
 	case model.StatusWarn:
-		return "\x1b[33m⚠ WARN\x1b[0m"
+		return "\x1b[33m\u26a0 WARN\x1b[0m"
 	case model.StatusFail:
-		return "\x1b[31m✗ FAIL\x1b[0m"
+		return "\x1b[31m\u2717 FAIL\x1b[0m"
 	default:
-		return "\x1b[36m• INFO\x1b[0m"
+		return "\x1b[36m\u2022 INFO\x1b[0m"
 	}
 }
 
@@ -128,6 +142,13 @@ func formatDuration(duration time.Duration) string {
 		return duration.Round(time.Millisecond).String()
 	}
 	return duration.Round(100 * time.Millisecond).String()
+}
+
+func scoreLine(check model.CheckResult) string {
+	if check.MaxPoints == 0 {
+		return "skipped"
+	}
+	return fmt.Sprintf("%d/%d", check.Points, check.MaxPoints)
 }
 
 func topWeaknesses(checks []model.CheckResult) []string {

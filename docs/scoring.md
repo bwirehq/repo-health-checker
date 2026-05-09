@@ -45,6 +45,7 @@ Issues are considered stale when they have not been updated for 90 days.
 - Pass: no open issues, or no more than 20 percent are stale.
 - Warn: more than 20 percent and no more than 50 percent are stale.
 - Fail: more than 50 percent are stale.
+- Info: unavailable during offline local scans.
 
 ## Pull Request Health: 10 points
 
@@ -53,6 +54,7 @@ Pull requests are considered stale when they have not been updated for 30 days.
 - Pass: no open pull requests, or none are stale.
 - Warn: 1 to 3 stale pull requests.
 - Fail: more than 3 stale pull requests.
+- Info: unavailable during offline local scans.
 
 ## Releases And Tags: 10 points
 

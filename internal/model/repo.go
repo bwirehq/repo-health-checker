@@ -57,6 +57,7 @@ func validRepoPart(value string) bool {
 
 type RepositoryData struct {
 	Ref             RepoRef
+	Source          SourceType
 	Description     string
 	DefaultBranch   string
 	Archived        bool
@@ -78,6 +79,13 @@ type RepositoryData struct {
 	DependencyFiles []string
 	TestFiles       []string
 }
+
+type SourceType string
+
+const (
+	SourceGitHub SourceType = "github"
+	SourceLocal  SourceType = "local"
+)
 
 type Commit struct {
 	SHA      string
