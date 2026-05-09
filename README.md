@@ -22,6 +22,7 @@ go run . scan
 repo-health scan
 repo-health scan github/cli
 repo-health scan https://github.com/github/cli --verbose
+repo-health scan github/cli --compact
 repo-health scan github/cli --json
 ```
 
@@ -37,6 +38,8 @@ Example output:
 Repo Health: 78/100 (C)
 Repository Risk: Medium
 
+Scan completed in 1.2s
+
 ✓ PASS CI configured
   Continuous integration configuration was detected.
 ✓ PASS Commit activity
@@ -46,8 +49,19 @@ Repository Risk: Medium
 ✗ FAIL Releases
   No releases or tags were found.
 
+Top weaknesses:
+• No releases
+• Missing tests
+
 Top fixes:
 1. Create a release - Tag a version and publish release notes when the project reaches a usable milestone.
+```
+
+Compact output is available for fast checks and scripts:
+
+```txt
+Score: 78/100 (C)
+Issues: no releases, missing tests, stale issues
 ```
 
 JSON output is stable for CI jobs and dashboards:
@@ -106,11 +120,14 @@ The token is read from the environment only. It is never printed or written to d
 
 ```txt
 --json            write machine-readable JSON
+--compact         write compact text output
 --verbose         include score details in text output
 --no-color        disable ANSI color output
 --fail-under N    exit with code 2 when score is below N
 --timeout 15s     GitHub API timeout
 ```
+
+When `--json` and `--compact` are both set, JSON output wins.
 
 ## Limitations
 
@@ -125,6 +142,7 @@ The token is read from the environment only. It is never printed or written to d
 - Web dashboard using the same scanner engine.
 - Repository comparison mode.
 - Bus-factor and maintainer dependency analysis.
+- Category subtotals for maintenance, reliability, community, and project hygiene.
 - Organization-level reporting.
 - Deeper dependency freshness checks.
 - Historical score tracking.

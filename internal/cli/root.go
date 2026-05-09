@@ -49,6 +49,7 @@ func newRootCommand(ctx context.Context, stdin io.Reader, stdout, stderr io.Writ
 		},
 	}
 	scan.Flags().BoolVar(&opts.json, "json", false, "write machine-readable JSON")
+	scan.Flags().BoolVar(&opts.compact, "compact", false, "write compact text output")
 	scan.Flags().BoolVar(&opts.noColor, "no-color", false, "disable ANSI color output")
 	scan.Flags().BoolVar(&opts.verbose, "verbose", false, "include score details in text output")
 	scan.Flags().IntVar(&opts.failUnder, "fail-under", 0, "exit with code 2 when score is below this value")
@@ -80,6 +81,7 @@ func repoInput(stdin io.Reader, stdout io.Writer, args []string) (string, error)
 
 type scanOptions struct {
 	json      bool
+	compact   bool
 	noColor   bool
 	verbose   bool
 	failUnder int
@@ -99,11 +101,13 @@ func runScan(ctx context.Context, stdout io.Writer, input string, opts scanOptio
 
 	client := gh.NewClient(&http.Client{Timeout: opts.timeout})
 	scan := scanner.New(client, config.Default(time.Now().UTC()), nil)
+	start := time.Now()
 	result, err := scan.Scan(ctx, ref)
+	duration := time.Since(start)
 	if err != nil {
 		return err
 	}
-	if err := report.Write(stdout, result, report.Options{JSON: opts.json, NoColor: opts.noColor, Verbose: opts.verbose}); err != nil {
+	if err := report.Write(stdout, result, report.Options{JSON: opts.json, Compact: opts.compact, NoColor: opts.noColor, Verbose: opts.verbose, Duration: duration}); err != nil {
 		return err
 	}
 	if opts.failUnder > 0 && result.Score < opts.failUnder {

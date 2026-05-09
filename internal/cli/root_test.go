@@ -3,8 +3,11 @@ package cli
 import (
 	"bytes"
 	"context"
+	"io"
 	"strings"
 	"testing"
+
+	"github.com/spf13/cobra"
 )
 
 func TestExecuteRejectsInvalidRepo(t *testing.T) {
@@ -29,5 +32,22 @@ func TestRepoInputPromptsWhenMissingArgument(t *testing.T) {
 	}
 	if !strings.Contains(stdout.String(), "GitHub repository") {
 		t.Fatalf("prompt was not written: %q", stdout.String())
+	}
+}
+
+func TestScanCommandHasCompactFlag(t *testing.T) {
+	cmd := newRootCommand(context.Background(), strings.NewReader(""), io.Discard, io.Discard)
+	var scan *cobra.Command
+	for _, child := range cmd.Commands() {
+		if child.Name() == "scan" {
+			scan = child
+			break
+		}
+	}
+	if scan == nil {
+		t.Fatal("scan command was not registered")
+	}
+	if flag := scan.Flags().Lookup("compact"); flag == nil {
+		t.Fatal("compact flag was not registered")
 	}
 }
