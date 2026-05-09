@@ -68,6 +68,25 @@ func TestWriteCompact(t *testing.T) {
 	}
 }
 
+func TestScoreLineZeroMaxPoints(t *testing.T) {
+	inputActiveRepo := model.CheckResult{Status: model.StatusPass, Points: 0, MaxPoints: 0}
+	if got := scoreLine(inputActiveRepo); got != "informational" {
+		t.Fatalf("active repository = %q, want informational", got)
+	}
+	inputInfo := model.CheckResult{Status: model.StatusInfo, Points: 0, MaxPoints: 0}
+	if got := scoreLine(inputInfo); got != "not available" {
+		t.Fatalf("unavailable check = %q, want not available", got)
+	}
+	inputArchived := model.CheckResult{Status: model.StatusWarn, Points: 0, MaxPoints: 0}
+	if got := scoreLine(inputArchived); got != "informational" {
+		t.Fatalf("archived warning = %q, want informational", got)
+	}
+	inputGraded := model.CheckResult{Status: model.StatusPass, Points: 3, MaxPoints: 10}
+	if got := scoreLine(inputGraded); got != "3/10" {
+		t.Fatalf("graded check = %q, want 3/10", got)
+	}
+}
+
 func TestWriteJSON(t *testing.T) {
 	var buf bytes.Buffer
 	err := Write(&buf, fixtureResult(), Options{JSON: true, Compact: true, Duration: 1200 * time.Millisecond})

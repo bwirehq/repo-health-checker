@@ -145,10 +145,13 @@ func formatDuration(duration time.Duration) string {
 }
 
 func scoreLine(check model.CheckResult) string {
-	if check.MaxPoints == 0 {
-		return "skipped"
+	if check.MaxPoints != 0 {
+		return fmt.Sprintf("%d/%d", check.Points, check.MaxPoints)
 	}
-	return fmt.Sprintf("%d/%d", check.Points, check.MaxPoints)
+	if check.Status == model.StatusInfo {
+		return "not available"
+	}
+	return "informational"
 }
 
 func topWeaknesses(checks []model.CheckResult) []string {

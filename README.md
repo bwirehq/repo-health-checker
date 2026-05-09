@@ -52,7 +52,7 @@ Repository Risk: Medium
 Scan completed in 1.2s
 
 Score breakdown:
-Repository status: skipped
+Repository status: informational
 README quality: 10/10
 Commit activity: 10/20
 Issue health: skipped
